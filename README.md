@@ -1,4 +1,4 @@
-# Oraph AI - Business Cost Estimation & Certainty Prediction
+# BudgetBeacon - Business Cost Estimation & Certainty Prediction
 
 AI-powered system that helps businesses estimate costs and understand how reliable those estimates are.
 
