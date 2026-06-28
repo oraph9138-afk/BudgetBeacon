@@ -1,8 +1,8 @@
-# How Oraph AI Works
+# How BudgetBeacon Works
 
-## What Is Oraph AI?
+## What Is BudgetBeacon?
 
-Oraph AI is an intelligent cost estimation system designed for small and medium businesses, particularly in Tanzania and East Africa. It predicts business costs using machine learning and provides a **confidence score** so users know how reliable each estimate is.
+BudgetBeacon is an intelligent cost estimation system designed for small and medium businesses, particularly in Tanzania and East Africa. It predicts business costs using machine learning and provides a **confidence score** so users know how reliable each estimate is.
 
 Instead of just saying *"Your cost is Tsh 1,000,000"*, it also says *"Confidence level is 85%"* — giving business owners the information they need to make informed financial decisions.
 

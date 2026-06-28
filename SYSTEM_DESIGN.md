@@ -172,7 +172,7 @@ src/
 ## 6. Project Structure
 
 ```
-Oraph/
+BudgetBeacon/
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py

@@ -14,7 +14,7 @@ AI-powered system that helps businesses estimate costs and understand how reliab
 ## Project Structure
 
 ```
-Oraph/
+BudgetBeacon/
 ├── backend/                    # FastAPI Python backend
 │   ├── app/
 │   │   ├── main.py             # FastAPI entry point
@@ -51,30 +51,38 @@ Oraph/
 ### Backend
 
 ```bash
-cd backend
+# 1. Navigate to the project
+cd /home/mrdino/Desktop/DTC/clients/oraph_collabo/BudgetBeacon/backend
 
-# Install dependencies
+# 2. Install Python dependencies
 pip install -r requirements.txt
 
-# Train ML models (first time only)
+#    On Debian/Ubuntu, use this instead:
+#    pip install --break-system-packages -r requirements.txt
+
+# 3. Train the ML model (first time only — generates ~0.98 R² model)
 python -m app.ml.train
 
-# Start server
+# 4. Start the API server
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Backend runs at: http://localhost:8000
-API docs: http://localhost:8000/docs
+Backend runs at: http://localhost:8000  
+API docs (Swagger): http://localhost:8000/docs
 
 ### Frontend
 
+**Linux / macOS:**
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
+npm run dev
+```
 
-# Start dev server
+**Windows (PowerShell):**
+```powershell
+cd frontend
+npm install
 npm run dev
 ```
 
