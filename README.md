@@ -50,17 +50,30 @@ BudgetBeacon/
 
 ### Backend
 
+**Linux / macOS:**
 ```bash
 # 1. Navigate to the project
 cd /home/mrdino/Desktop/DTC/clients/oraph_collabo/BudgetBeacon/backend
 
+# 2. Install Python dependencies (use --break-system-packages on Ubuntu/Debian)
+pip install --break-system-packages -r requirements.txt
+
+# 3. Train the ML model (first time only — generates ~0.98 R² model)
+python -m app.ml.train
+
+# 4. Start the API server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Windows (PowerShell):**
+```powershell
+# 1. Navigate to the project
+cd C:\path\to\BudgetBeacon\backend
+
 # 2. Install Python dependencies
 pip install -r requirements.txt
 
-#    On Debian/Ubuntu, use this instead:
-#    pip install --break-system-packages -r requirements.txt
-
-# 3. Train the ML model (first time only — generates ~0.98 R² model)
+# 3. Train the ML model (first time only)
 python -m app.ml.train
 
 # 4. Start the API server
@@ -132,7 +145,61 @@ Handle USSD session callbacks from Africa's Talking.
 - **Current Training:** Synthetic data (5000 samples)
 - **R² Score:** ~0.98
 
-To retrain with real data, replace the synthetic data generator in `backend/app/ml/train.py` with your dataset and run:
+### Logic Behind the ML
+
+**Why Gradient Boosting?**
+This algorithm builds a sequence of decision trees, where each tree corrects the errors of the previous one. It handles mixed data types (numeric fields like costs + categorical fields like business type) without needing complex preprocessing, and tends to outperform simpler models like linear regression on business cost data where relationships are non-linear (e.g., doubling production days doesn't always double costs linearly).
+
+**Why 3 models instead of 1?**
+Most prediction systems give one answer with no reliability indicator. BudgetBeacon trains 3 models to solve this:
+- The **main model** learns the expected cost
+- The **lower model** (alpha=0.1) purposely under-predicts — it learns what the 10th percentile looks like (90% of actual costs should be above this)
+- The **upper model** (alpha=0.9) purposely over-predicts — it learns the 90th percentile (90% of actual costs should be below this)
+
+If all 3 models agree closely, the gap is narrow → high confidence. If they disagree widely, the gap is wide → low confidence. This is called **quantile regression** and avoids the common mistake of assuming all predictions are equally reliable.
+
+**Why confidence scores matter for business users:**
+A farmer seeing "Tsh 1,200,000 ± 88% confidence" can treat that as a solid planning number. A trader seeing "Tsh 800,000 ± 40% confidence" knows to treat it as a rough ballpark and perhaps gather more data. Without the confidence score, both would seem equally reliable, leading to poor decisions.
+
+**Confidence formula:**
+```
+Confidence % = (1 - (upper_bound - lower_bound) / predicted_cost) × 100
+```
+This normalizes the prediction interval relative to the predicted cost — a Tsh 100,000 gap is narrow for a Tsh 1M estimate (90% confidence) but wide for a Tsh 200K estimate (50% confidence).
+
+### What `python -m app.ml.train` does
+
+Runs `backend/app/ml/train.py`, which does 4 things in sequence:
+
+**1. Generate synthetic training data** — Creates 5,000 rows with 7 features (business type, location, material/transport/labor costs, production days, quantity). The target `actual_cost` is calculated as `(costs + overhead) × business_multiplier × location_multiplier + noise`, simulating real-world patterns (farming vs retail costs, regional price differences).
+
+**2. Train 3 Gradient Boosting models** using scikit-learn:
+
+| Model | Purpose | Config |
+|-------|---------|--------|
+| **Main** | Predict expected cost | Standard regression |
+| **Lower** | Predict best-case (10th percentile) | `quantile`, alpha=0.1 |
+| **Upper** | Predict worst-case (90th percentile) | `quantile`, alpha=0.9 |
+
+All use 200 decision trees, max depth 5, learning rate 0.1. The quantile models enable the **confidence score** by measuring how wide the prediction interval is.
+
+**3. Save models** via `joblib.dump` into `backend/models/` as `.pkl` files.
+
+**4. Report R² score** — currently ~0.98 on synthetic data.
+
+### ML Libraries
+
+| Library | Role |
+|---------|------|
+| **scikit-learn** (`GradientBoostingRegressor`) | ML engine — builds 200-tree ensembles |
+| **numpy** | Random data generation and array math |
+| **pandas** | DataFrame structure for model input |
+| **joblib** | Serialize/deserialize trained models |
+
+### Retrain with real data
+
+Replace `generate_synthetic_data()` in `backend/app/ml/train.py` with a CSV loader, then run:
+
 ```bash
 python -m app.ml.train
 ```
