@@ -52,14 +52,13 @@ pip install --break-system-packages -r requirements.txt
 |---------|---------|---------|
 | `fastapi` | 0.115+ | Web framework for the API |
 | `uvicorn` | 0.30+ | ASGI server to run FastAPI |
-| `scikit-learn` | 1.5+ | ML library (Gradient Boosting models) |
-| `xgboost` | 2.1+ | Alternative ML engine (optional) |
+| `xgboost` | 2.1+ | ML engine (XGBoost — replaces scikit-learn entirely) |
 | `numpy` | 1.26+ | Numerical computation |
 | `pandas` | 2.2+ | Data manipulation |
 | `pydantic` | 2.9+ | Data validation (used by FastAPI) |
 | `sqlalchemy` | 2.0+ | Database ORM |
 | `joblib` | 1.4+ | Model serialization |
-| `python-multipart` | latest | Required for USSD form data |
+| `python-multipart` | 0.0.27+ | Required for USSD webhook form data |
 
 ### Step 4: Train the ML models
 

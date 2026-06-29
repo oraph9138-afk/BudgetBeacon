@@ -140,7 +140,15 @@ Handle USSD session callbacks from Africa's Talking.
 
 ## ML Model
 
-- **Algorithm:** Gradient Boosting Regressor (XGBoost)
+- **Algorithm:** XGBoost (Gradient Boosting via `XGBRegressor`)
+
+**The three models now use XGBoost exclusively:**
+
+| Model | Purpose | Objective |
+|-------|---------|-----------|
+| **Main** | Predict expected cost | `reg:squarederror` |
+| **Lower** | Best-case (10th percentile) | `reg:quantileerror`, alpha=0.1 |
+| **Upper** | Worst-case (90th percentile) | `reg:quantileerror`, alpha=0.9 |
 - **Confidence:** Quantile regression (10th and 90th percentiles)
 - **Current Training:** Synthetic data (5000 samples)
 - **R² Score:** ~0.98
@@ -173,7 +181,7 @@ Runs `backend/app/ml/train.py`, which does 4 things in sequence:
 
 **1. Generate synthetic training data** — Creates 5,000 rows with 7 features (business type, location, material/transport/labor costs, production days, quantity). The target `actual_cost` is calculated as `(costs + overhead) × business_multiplier × location_multiplier + noise`, simulating real-world patterns (farming vs retail costs, regional price differences).
 
-**2. Train 3 Gradient Boosting models** using scikit-learn:
+**2. Train 3 XGBoost models** (no scikit-learn needed):
 
 | Model | Purpose | Config |
 |-------|---------|--------|
@@ -191,7 +199,7 @@ All use 200 decision trees, max depth 5, learning rate 0.1. The quantile models 
 
 | Library | Role |
 |---------|------|
-| **scikit-learn** (`GradientBoostingRegressor`) | ML engine — builds 200-tree ensembles |
+| **xgboost** (`XGBRegressor`) | ML engine — builds 200-tree ensembles |
 | **numpy** | Random data generation and array math |
 | **pandas** | DataFrame structure for model input |
 | **joblib** | Serialize/deserialize trained models |
