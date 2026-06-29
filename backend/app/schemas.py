@@ -1,6 +1,33 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
+
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    business_name: str = ""
+    phone: str = ""
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    token: str
+    user: "UserResponse"
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    business_name: str = ""
+    phone: str = ""
+
+    class Config:
+        from_attributes = True
 
 
 class EstimateInput(BaseModel):

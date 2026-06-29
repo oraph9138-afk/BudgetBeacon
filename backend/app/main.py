@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import estimate, history, ussd
+from app.routes import estimate, history, ussd, auth
 
 app = FastAPI(
     title="Oraph AI Cost Estimator",
@@ -19,6 +19,7 @@ app.add_middleware(
 app.include_router(estimate.router)
 app.include_router(history.router)
 app.include_router(ussd.router)
+app.include_router(auth.router)
 
 
 @app.get("/")

@@ -10,3 +10,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 BUSINESS_TYPES = ["agriculture", "retail", "manufacturing", "transport", "services"]
 LOCATIONS = ["Dar es Salaam", "Arusha", "Mwanza", "Dodoma", "Zanzibar", "Mbeya", "Other"]
 RISK_THRESHOLDS = {"low": 75, "medium": 50}
+
+JWT_SECRET = os.getenv("JWT_SECRET", "budgetbeacon-secret-key-change-in-production")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 24
