@@ -15,7 +15,7 @@ function App() {
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">O</span>
                 </div>
-                <span className="text-xl font-bold text-gray-900">Oraph AI</span>
+                <span className="text-xl font-bold text-gray-900">BudgetBeacon</span>
               </Link>
               <nav className="flex items-center gap-6">
                 <Link to="/" className="flex items-center gap-1 text-gray-600 hover:text-blue-600 transition-colors text-sm">

@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 import joblib
 import os
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
-from sklearn.preprocessing import LabelEncoder
+from xgboost import XGBRegressor
 from app.config import MODEL_DIR, DATA_DIR, BUSINESS_TYPES, LOCATIONS
 
 
@@ -54,22 +53,23 @@ def train_models():
     y = df["actual_cost"].values
 
     print("Training main cost estimation model...")
-    main_model = GradientBoostingRegressor(
-        n_estimators=200, max_depth=5, learning_rate=0.1, random_state=42
+    main_model = XGBRegressor(
+        n_estimators=200, max_depth=5, learning_rate=0.1, random_state=42,
+        objective="reg:squarederror"
     )
     main_model.fit(X, y)
 
     print("Training lower quantile model (10th percentile)...")
-    lower_model = GradientBoostingRegressor(
-        n_estimators=200, max_depth=5, learning_rate=0.1,
-        loss="quantile", alpha=0.1, random_state=42
+    lower_model = XGBRegressor(
+        n_estimators=200, max_depth=5, learning_rate=0.1, random_state=42,
+        objective="reg:quantileerror", quantile_alpha=0.1
     )
     lower_model.fit(X, y)
 
     print("Training upper quantile model (90th percentile)...")
-    upper_model = GradientBoostingRegressor(
-        n_estimators=200, max_depth=5, learning_rate=0.1,
-        loss="quantile", alpha=0.9, random_state=42
+    upper_model = XGBRegressor(
+        n_estimators=200, max_depth=5, learning_rate=0.1, random_state=42,
+        objective="reg:quantileerror", quantile_alpha=0.9
     )
     upper_model.fit(X, y)
 
