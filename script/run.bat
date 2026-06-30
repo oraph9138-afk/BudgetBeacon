@@ -10,10 +10,7 @@ if "%~1"=="" goto :done_parse
 if /i "%~1"=="--backend-port" (set BACKEND_PORT=%~2 & shift & shift & goto :parse)
 if /i "%~1"=="--frontend-port" (set FRONTEND_PORT=%~2 & shift & shift & goto :parse)
 if /i "%~1"=="--no-frontend" (set NO_FRONTEND=1 & shift & goto :parse)
-if /i "%~1"=="--help" (
-  echo Usage: %~nx0 [--backend-port PORT] [--frontend-port PORT] [--no-frontend]
-  exit /b 0
-)
+if /i "%~1"=="--help" (echo Usage: %~nx0 [--backend-port PORT] [--frontend-port PORT] [--no-frontend] & exit /b 0)
 echo Unknown flag: %~1 & exit /b 1
 :done_parse
 
@@ -69,19 +66,7 @@ if %READY% equ 0 (
 echo   API Docs: http://127.0.0.1:%BACKEND_PORT%/docs
 echo.
 
-if "%NO_FRONTEND%"=="1" goto :summary
-
-echo [5/5] Starting frontend on 0.0.0.0:%FRONTEND_PORT%...
-cd /d "%FRONTEND_DIR%"
-npm install --silent >nul 2>&1
-if errorlevel 1 (
-  echo   Warning: npm install had issues, attempting to start anyway...
-)
-set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
-start "BudgetBeacon - Frontend" /min cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
-echo   Frontend: http://127.0.0.1:%FRONTEND_PORT%
-
-:summary
+REM ---- Show summary before starting frontend (avoids start cmd bugs) ----
 echo ==============================================
 echo    BudgetBeacon is running!
 echo.
@@ -92,5 +77,24 @@ echo.
 echo    Opening frontend in your browser...
 echo    Close this window to stop all services.
 echo ==============================================
+
 start http://127.0.0.1:%FRONTEND_PORT%
+
+if "%NO_FRONTEND%"=="1" goto :end
+
+echo [5/5] Starting frontend on 0.0.0.0:%FRONTEND_PORT%...
+pushd "%FRONTEND_DIR%"
+if errorlevel 1 (
+  echo   Warning: Frontend directory not found at %FRONTEND_DIR%
+  goto :end
+)
+npm install --silent >nul 2>&1
+if errorlevel 1 (
+  echo   Warning: npm install had issues, attempting to start anyway...
+)
+set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
+start "" cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
+echo   Frontend: http://127.0.0.1:%FRONTEND_PORT%
+
+:end
 pause
