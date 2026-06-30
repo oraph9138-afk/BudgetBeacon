@@ -102,11 +102,11 @@ function Layout() {
 
   const markAllRead = (e) => {
     e.stopPropagation();
-    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    setNotifications([]);
   };
 
   const markAsRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
