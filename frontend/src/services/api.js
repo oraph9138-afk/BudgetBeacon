@@ -49,3 +49,8 @@ export const getHistory = async () => {
   const response = await api.get("/api/history");
   return response.data;
 };
+
+export const updateProfile = async (data) => {
+  const response = await api.put("/api/auth/me", data);
+  return response.data;
+};

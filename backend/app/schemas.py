@@ -30,6 +30,11 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+class UpdateProfileRequest(BaseModel):
+    business_name: str = ""
+    phone: str = ""
+
+
 class EstimateInput(BaseModel):
     business_type: str
     material_cost: float
