@@ -1,29 +1,20 @@
-import { Shield, AlertTriangle, TrendingDown, CheckCircle } from "lucide-react";
-
 function ResultCard({ result, onNew }) {
   const getConfidenceColor = (pct) => {
-    if (pct >= 75) return "text-green-600";
-    if (pct >= 50) return "text-yellow-600";
-    return "text-red-600";
+    if (pct >= 75) return 'var(--ds-success)';
+    if (pct >= 50) return 'var(--ds-warning)';
+    return 'var(--ds-danger)';
   };
 
-  const getConfidenceBg = (pct) => {
-    if (pct >= 75) return "bg-green-600";
-    if (pct >= 50) return "bg-yellow-600";
-    return "bg-red-600";
-  };
-
-  const getRiskIcon = (risk) => {
-    switch (risk) {
-      case "Low":
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case "Medium":
-        return <Shield className="w-5 h-5 text-yellow-600" />;
-      case "High":
-        return <AlertTriangle className="w-5 h-5 text-red-600" />;
-      default:
-        return null;
-    }
+  const getRiskBadge = (risk) => {
+    const styles = {
+      Low: { bg: 'var(--ds-success-bg)', text: 'var(--ds-success-text)' },
+      Medium: { bg: 'var(--ds-warning-bg)', text: 'var(--ds-warning-text)' },
+      High: { bg: 'var(--ds-danger-bg)', text: 'var(--ds-danger-text)' },
+    };
+    const s = styles[risk] || styles.Low;
+    return (
+      <span className="badge" style={{ backgroundColor: s.bg, color: s.text }}>{risk}</span>
+    );
   };
 
   const formatCurrency = (amount) => {
@@ -31,59 +22,59 @@ function ResultCard({ result, onNew }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="text-center mb-6">
-          <p className="text-sm text-gray-500 mb-1">Estimated Total Cost</p>
-          <p className="text-4xl font-bold text-gray-900">
-            {formatCurrency(result.predicted_cost)}
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-600">Confidence Level</span>
-              <span className={`text-lg font-bold ${getConfidenceColor(result.confidence_pct)}`}>
-                {result.confidence_pct}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div
-                className={`h-3 rounded-full transition-all ${getConfidenceBg(result.confidence_pct)}`}
-                style={{ width: `${result.confidence_pct}%` }}
-              />
-            </div>
+    <div className="max-w-2xl mx-auto space-y-5">
+      <div className="card card-lg">
+        <div className="card-body">
+          <div className="text-center mb-5">
+            <p className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--ds-text-secondary)' }}>Estimated Total Cost</p>
+            <p className="text-[1.75rem] font-bold" style={{ color: 'var(--ds-heading-color)' }}>{formatCurrency(result.predicted_cost)}</p>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              {getRiskIcon(result.risk_level)}
-              <span className="text-sm font-medium text-gray-600">Risk Level</span>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--ds-hover-bg)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--ds-text-secondary)' }}>Confidence Level</span>
+                <span className="text-lg font-bold" style={{ color: getConfidenceColor(result.confidence_pct) }}>
+                  {result.confidence_pct}%
+                </span>
+              </div>
+              <div className="w-full rounded-full h-2" style={{ backgroundColor: 'var(--ds-border)' }}>
+                <div className="h-2 rounded-full transition-all" style={{ width: `${result.confidence_pct}%`, backgroundColor: getConfidenceColor(result.confidence_pct) }} />
+              </div>
             </div>
-            <p className="text-lg font-bold">{result.risk_level}</p>
+
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--ds-hover-bg)' }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--ds-text-secondary)' }}>Risk Level</span>
+                {getRiskBadge(result.risk_level)}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold mb-4">Cost Breakdown</h3>
-        <div className="space-y-3">
-          {Object.entries(result.breakdown).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-              <span className="text-sm text-gray-600 capitalize">{key.replace("_", " ")}</span>
-              <span className="font-medium">{formatCurrency(value)}</span>
-            </div>
-          ))}
+      <div className="card card-lg">
+        <div className="card-body">
+          <h5 className="text-base font-semibold mb-4" style={{ color: 'var(--ds-heading-color)' }}>Cost Breakdown</h5>
+          <div className="space-y-3">
+            {Object.entries(result.breakdown).map(([key, value]) => (
+              <div key={key} className="flex items-center justify-between py-2 last:border-0" style={{ borderBottom: '1px solid var(--ds-table-border)' }}>
+                <span className="text-sm capitalize" style={{ color: 'var(--ds-text-secondary)' }}>{key.replace("_", " ")}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--ds-body-color)' }}>{formatCurrency(value)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="bg-blue-50 rounded-lg p-4">
+      <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--ds-primary-bg)' }}>
         <div className="flex items-start gap-3">
-          <TrendingDown className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div className="w-8 h-8 bg-[--ds-primary] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i className="ti ti-trending-up text-white text-sm" />
+          </div>
           <div>
-            <p className="text-sm font-medium text-blue-800 mb-1">Insight</p>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--ds-primary-text)' }}>Insight</p>
+            <p className="text-sm" style={{ color: 'var(--ds-primary-text)' }}>
               {result.confidence_pct >= 75
                 ? "This estimate has high confidence. You can plan with reasonable certainty."
                 : result.confidence_pct >= 50
@@ -94,10 +85,9 @@ function ResultCard({ result, onNew }) {
         </div>
       </div>
 
-      <button
-        onClick={onNew}
-        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-      >
+      <button onClick={onNew}
+        className="w-full text-white px-5 py-2.5 rounded-lg font-bold transition-colors text-sm cursor-pointer"
+        style={{ backgroundColor: 'var(--ds-primary)' }}>
         New Estimate
       </button>
     </div>

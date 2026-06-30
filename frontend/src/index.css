@@ -1,7 +1,152 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-bs-theme="dark"], [data-bs-theme="dark"] *));
+
+:root {
+  --ds-body-bg: #fff;
+  --ds-body-color: #1c252e;
+  --ds-heading-color: #1c252e;
+  --ds-text-secondary: #637381;
+  --ds-text-muted: #919eab;
+  --ds-label-color: #454f5b;
+  --ds-border: #dfe3e8;
+  --ds-card-bg: #fff;
+  --ds-sidebar-bg: #fff;
+  --ds-navbar-bg: transparent;
+  --ds-hover-bg: #f9fafb;
+  --ds-table-border: #f4f6f8;
+  --ds-table-hover: #f9fafb;
+  --ds-input-bg: #fff;
+  --ds-primary: #00a76f;
+  --ds-primary-dark: #008a5c;
+  --ds-primary-bg: #c8fad6;
+  --ds-primary-text: #007867;
+  --ds-success: #22c55e;
+  --ds-success-bg: #d3fcd2;
+  --ds-success-text: #118d57;
+  --ds-warning: #ffab00;
+  --ds-warning-bg: #fff5cc;
+  --ds-warning-text: #b76e00;
+  --ds-danger: #ff5630;
+  --ds-danger-bg: #ffe9d5;
+  --ds-danger-text: #b71d18;
+  --ds-info-bg: #cafdf5;
+  --ds-info-text: #006c9c;
+  --ds-shadow-card: 0 12px 24px -4px rgba(145, 158, 171, 0.16);
+  --ds-shadow-sm: 0 4px 8px 0 rgba(145, 158, 171, 0.16);
+}
+
+[data-bs-theme="dark"] {
+  --ds-body-bg: #141a21;
+  --ds-body-color: #c4cdd5;
+  --ds-heading-color: #f9fafb;
+  --ds-text-secondary: #919eab;
+  --ds-text-muted: #637381;
+  --ds-label-color: #919eab;
+  --ds-border: rgba(99, 115, 129, 0.25);
+  --ds-card-bg: #1c252e;
+  --ds-sidebar-bg: #1c252e;
+  --ds-navbar-bg: rgba(20, 26, 33, 0.9);
+  --ds-hover-bg: rgba(99, 115, 129, 0.08);
+  --ds-table-border: rgba(99, 115, 129, 0.15);
+  --ds-table-hover: rgba(99, 115, 129, 0.08);
+  --ds-input-bg: #1c252e;
+  --ds-primary-bg: #001314;
+  --ds-primary-text: #66caa9;
+  --ds-success-bg: #0a2e1a;
+  --ds-success-text: #7adc9e;
+  --ds-warning-bg: #2a2000;
+  --ds-warning-text: #ffd666;
+  --ds-danger-bg: #2a0a0a;
+  --ds-danger-text: #ff9a83;
+  --ds-info-bg: #002a2e;
+  --ds-info-text: #66d9e8;
+  --ds-shadow-card: 0 12px 24px -4px rgba(0, 0, 0, 0.16);
+  --ds-shadow-sm: 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    margin: 0;
+    font-family: "Public Sans", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.57;
+    color: var(--ds-body-color);
+    background-color: var(--ds-body-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .card {
+    --card-spacer-y: 1.25rem;
+    --card-spacer-x: 1.25rem;
+    background-color: var(--ds-card-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: 1rem;
+    box-shadow: var(--ds-shadow-card);
+  }
+  .card-body {
+    padding: var(--card-spacer-y) var(--card-spacer-x);
+  }
+  .card-lg {
+    padding: 1.25rem;
+  }
+  .card .card-header {
+    padding: 1.09375rem 1.25rem;
+    border-bottom: 1px solid var(--ds-border);
+    background-color: transparent;
+  }
+  .card .card-header:first-child {
+    border-radius: 1rem 1rem 0 0;
+  }
+  .table th {
+    font-weight: 500;
+    color: var(--ds-text-secondary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .table td {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--ds-table-border);
+    vertical-align: middle;
+  }
+  .table tbody tr:hover {
+    background-color: var(--ds-table-hover);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35em 0.65em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 0.25rem;
+  }
+  .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (max-width: 990px) {
+    #content {
+      margin-left: 0 !important;
+    }
+    #miniSidebar {
+      display: none;
+    }
+    .navbar-glass {
+      width: 100% !important;
+    }
   }
 }

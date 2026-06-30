@@ -44,7 +44,6 @@ function NewEstimate() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       const payload = {
         ...formData,
@@ -76,153 +75,103 @@ function NewEstimate() {
     });
   };
 
+  if (result) {
+    return <ResultCard result={result} onNew={handleReset} />;
+  }
+
+  const inputStyle = {
+    border: '1px solid var(--ds-border)',
+    borderRadius: '0.5rem',
+    padding: '0.625rem 0.75rem',
+    fontSize: '0.875rem',
+    color: 'var(--ds-body-color)',
+    backgroundColor: 'var(--ds-input-bg)',
+    outline: 'none',
+    width: '100%',
+    transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold mb-6">New Cost Estimate</h1>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h5 className="text-base font-semibold mb-0" style={{ color: 'var(--ds-heading-color)' }}>New Cost Estimate</h5>
 
-      {result ? (
-        <div className="space-y-6">
-          <ResultCard result={result} onNew={handleReset} />
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="grid md:grid-cols-2 gap-6">
+      <form className="card card-lg">
+        <div className="card-body">
+          <div className="grid md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Type
-              </label>
-              <select
-                name="business_type"
-                value={formData.business_type}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Business Type</label>
+              <select name="business_type" value={formData.business_type} onChange={handleChange} style={inputStyle}
+                className="focus:[border-color:var(--ds-primary)] focus:[box-shadow:0_0_0_2px_rgba(0,167,111,0.25)]">
                 {BUSINESS_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
+                  <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <select
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Location</label>
+              <select name="location" value={formData.location} onChange={handleChange} style={inputStyle}
+                className="focus:[border-color:var(--ds-primary)] focus:[box-shadow:0_0_0_2px_rgba(0,167,111,0.25)]">
                 {LOCATIONS.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
+                  <option key={loc} value={loc}>{loc}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Material Cost (Tsh)
-              </label>
-              <input
-                type="number"
-                name="material_cost"
-                value={formData.material_cost}
-                onChange={handleChange}
-                placeholder="e.g. 500000"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Material Cost (Tsh)</label>
+              <input type="number" name="material_cost" value={formData.material_cost} onChange={handleChange}
+                placeholder="e.g. 500000" required style={inputStyle}
+                className="focus:[border-color:var(--ds-primary)] focus:[box-shadow:0_0_0_2px_rgba(0,167,111,0.25)]"
+                onFocus={(e) => { e.target.style.borderColor = 'var(--ds-primary)'; e.target.style.boxShadow = '0 0 0 2px rgba(0,167,111,0.25)' }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--ds-border)'; e.target.style.boxShadow = 'none' }} />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Transport Cost (Tsh)
-              </label>
-              <input
-                type="number"
-                name="transport_cost"
-                value={formData.transport_cost}
-                onChange={handleChange}
-                placeholder="e.g. 150000"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Transport Cost (Tsh)</label>
+              <input type="number" name="transport_cost" value={formData.transport_cost} onChange={handleChange}
+                placeholder="e.g. 150000" required style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--ds-primary)'; e.target.style.boxShadow = '0 0 0 2px rgba(0,167,111,0.25)' }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--ds-border)'; e.target.style.boxShadow = 'none' }} />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Labor Cost (Tsh)
-              </label>
-              <input
-                type="number"
-                name="labor_cost"
-                value={formData.labor_cost}
-                onChange={handleChange}
-                placeholder="e.g. 200000"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Labor Cost (Tsh)</label>
+              <input type="number" name="labor_cost" value={formData.labor_cost} onChange={handleChange}
+                placeholder="e.g. 200000" required style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--ds-primary)'; e.target.style.boxShadow = '0 0 0 2px rgba(0,167,111,0.25)' }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--ds-border)'; e.target.style.boxShadow = 'none' }} />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Production Days
-              </label>
-              <input
-                type="number"
-                name="production_days"
-                value={formData.production_days}
-                onChange={handleChange}
-                placeholder="e.g. 14"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Production Days</label>
+              <input type="number" name="production_days" value={formData.production_days} onChange={handleChange}
+                placeholder="e.g. 14" required style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--ds-primary)'; e.target.style.boxShadow = '0 0 0 2px rgba(0,167,111,0.25)' }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--ds-border)'; e.target.style.boxShadow = 'none' }} />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Quantity
-              </label>
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                placeholder="e.g. 100"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--ds-label-color)' }}>Quantity</label>
+              <input type="number" name="quantity" value={formData.quantity} onChange={handleChange}
+                placeholder="e.g. 100" required style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--ds-primary)'; e.target.style.boxShadow = '0 0 0 2px rgba(0,167,111,0.25)' }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--ds-border)'; e.target.style.boxShadow = 'none' }} />
             </div>
           </div>
 
           {error && (
-            <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
-              {error}
-            </div>
+            <div className="mt-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'var(--ds-danger-bg)', color: 'var(--ds-danger-text)' }}>{error}</div>
           )}
 
           <div className="mt-6 flex gap-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={loading}
+              className="text-white px-5 py-2.5 rounded-lg font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              style={{ backgroundColor: 'var(--ds-primary)' }}>
               {loading ? "Calculating..." : "Get Estimate"}
             </button>
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="px-6 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-            >
+            <button type="button" onClick={() => navigate(-1)}
+              className="px-5 py-2.5 rounded-lg font-medium text-sm transition-colors"
+              style={{ border: '1px solid var(--ds-border)', color: 'var(--ds-text-secondary)' }}>
               Cancel
             </button>
           </div>
-        </form>
-      )}
+        </div>
+      </form>
     </div>
   );
 }
