@@ -46,7 +46,7 @@ if %errorlevel% neq 0 (echo Error: pip install failed & pause & exit /b 1)
 REM ---- Train ML models ----
 echo [3/4] Checking ML models...
 if not exist "%MODEL_DIR%\main_model.pkl" (
-  echo   Models not found -- training now (first run, ~30 seconds)...
+  echo   Models not found -- training now (first run, ~30 seconds)
   python -m app.ml.train
   if %errorlevel% neq 0 (echo Error: training failed & pause & exit /b 1)
 ) else (
