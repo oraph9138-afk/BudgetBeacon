@@ -140,7 +140,7 @@ if (-not $ready) {
   Die "Backend failed to start within 30 seconds."
 }
 Write-Host " ready!" -ForegroundColor Green
-Write-Host "   API Docs:  http://127.0.0.1:$BackendPort/docs"
+Write-Host "   API Docs:  http://localhost:$BackendPort/docs"
 Write-Host ""
 
 $frontendJob = $null
@@ -163,7 +163,7 @@ if (-not $NoFrontend) {
 
   Start-Sleep -Seconds 4
   if ($frontendJob.State -eq "Running") {
-    Write-Host "   Frontend: http://127.0.0.1:$FrontendPort"
+    Write-Host "   Frontend: http://localhost:$FrontendPort"
   } else {
     Write-Host "⚠  Frontend failed to start." -ForegroundColor Yellow
     Receive-Job $frontendJob -ErrorAction SilentlyContinue
@@ -174,9 +174,9 @@ if (-not $NoFrontend) {
 Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor Green
 Write-Host "║  BudgetBeacon is running!                       ║" -ForegroundColor Green
 Write-Host "║                                                  ║" -ForegroundColor Green
-Write-Host "║  Frontend:  http://127.0.0.1:$FrontendPort      ║" -ForegroundColor Green
-Write-Host "║  Backend:   http://127.0.0.1:$BackendPort      ║" -ForegroundColor Green
-Write-Host "║  API Docs:  http://127.0.0.1:$BackendPort/docs ║" -ForegroundColor Green
+Write-Host "║  Frontend:  http://localhost:$FrontendPort      ║" -ForegroundColor Green
+Write-Host "║  Backend:   http://localhost:$BackendPort      ║" -ForegroundColor Green
+Write-Host "║  API Docs:  http://localhost:$BackendPort/docs ║" -ForegroundColor Green
 Write-Host "║                                                  ║" -ForegroundColor Green
 Write-Host "║  Press Ctrl+C to stop all services               ║" -ForegroundColor Green
 Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor Green

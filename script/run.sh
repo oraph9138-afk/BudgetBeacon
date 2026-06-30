@@ -162,7 +162,7 @@ if [ "$BACKEND_READY" = false ]; then
   die "Backend failed to start within 30 seconds. Check for errors above."
 fi
 
-echo "   API Docs:  http://127.0.0.1:$BACKEND_PORT/docs"
+echo "   API Docs:  http://localhost:$BACKEND_PORT/docs"
 echo ""
 
 # ──────────────────────────────────────────────
@@ -179,7 +179,7 @@ if [ "$NO_FRONTEND" = false ]; then
 
   sleep 3
   if kill -0 "$FRONTEND_PID" 2>/dev/null; then
-    echo "   Frontend: http://127.0.0.1:$FRONTEND_PORT"
+    echo "   Frontend: http://localhost:$FRONTEND_PORT"
   else
     echo "⚠  Frontend process exited unexpectedly. Check npm run dev for errors."
   fi
@@ -192,9 +192,9 @@ fi
 echo "╔══════════════════════════════════════════════════╗"
 echo "║  BudgetBeacon is running!                       ║"
 echo "║                                                  ║"
-echo "║  Frontend:  http://127.0.0.1:$FRONTEND_PORT      ║"
-echo "║  Backend:   http://127.0.0.1:$BACKEND_PORT      ║"
-echo "║  API Docs:  http://127.0.0.1:$BACKEND_PORT/docs ║"
+echo "║  Frontend:  http://localhost:$FRONTEND_PORT      ║"
+echo "║  Backend:   http://localhost:$BACKEND_PORT      ║"
+echo "║  API Docs:  http://localhost:$BACKEND_PORT/docs ║"
 echo "║                                                  ║"
 echo "║  Press Ctrl+C to stop all services               ║"
 echo "╚══════════════════════════════════════════════════╝"

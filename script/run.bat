@@ -63,22 +63,22 @@ if %READY% equ 0 (
 ) else (
   echo   Backend is ready!
 )
-echo   API Docs: http://127.0.0.1:%BACKEND_PORT%/docs
+echo   API Docs: http://localhost:%BACKEND_PORT%/docs
 echo.
 
 REM ---- Show summary before starting frontend (avoids start cmd bugs) ----
 echo ==============================================
 echo    BudgetBeacon is running!
 echo.
-echo    Frontend:  http://127.0.0.1:%FRONTEND_PORT%
-echo    Backend:   http://127.0.0.1:%BACKEND_PORT%
-echo    API Docs:  http://127.0.0.1:%BACKEND_PORT%/docs
+echo    Frontend:  http://localhost:%FRONTEND_PORT%
+echo    Backend:   http://localhost:%BACKEND_PORT%
+echo    API Docs:  http://localhost:%BACKEND_PORT%/docs
 echo.
 echo    Opening frontend in your browser...
 echo    Close this window to stop all services.
 echo ==============================================
 
-start http://127.0.0.1:%FRONTEND_PORT%
+start http://localhost:%FRONTEND_PORT%
 
 if "%NO_FRONTEND%"=="1" goto :end
 
@@ -94,7 +94,7 @@ if errorlevel 1 (
 )
 set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
 start "" cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
-echo   Frontend: http://127.0.0.1:%FRONTEND_PORT%
+echo   Frontend: http://localhost:%FRONTEND_PORT%
 
 :end
 pause
