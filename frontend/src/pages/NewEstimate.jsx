@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEstimate } from "../services/api";
 import ResultCard from "../components/ResultCard";
+import { currencies, formatCurrency, convertToTZS, convertFromTZS } from "../utils/currency";
 
 const BUSINESS_TYPES = [
   { value: "agriculture", label: "Agriculture", icon: "ti ti-trees" },
@@ -34,6 +35,7 @@ function NewEstimate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [currency, setCurrency] = useState("TZS");
   const [formData, setFormData] = useState({
     business_type: "agriculture",
     material_cost: "",
@@ -64,14 +66,15 @@ function NewEstimate() {
     try {
       const payload = {
         ...formData,
-        material_cost: parseFloat(formData.material_cost),
-        transport_cost: parseFloat(formData.transport_cost),
-        labor_cost: parseFloat(formData.labor_cost),
+        material_cost: convertToTZS(parseFloat(formData.material_cost) || 0, currency),
+        transport_cost: convertToTZS(parseFloat(formData.transport_cost) || 0, currency),
+        labor_cost: convertToTZS(parseFloat(formData.labor_cost) || 0, currency),
         production_days: parseInt(formData.production_days),
         quantity: parseInt(formData.quantity),
+        currency,
       };
       const response = await createEstimate(payload);
-      setResult(response);
+      setResult({ ...response, displayCurrency: currency });
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to get estimate. Please try again.");
     } finally {
@@ -82,6 +85,7 @@ function NewEstimate() {
   const handleReset = () => {
     setResult(null);
     setStep(1);
+    setCurrency("TZS");
     setFormData({
       business_type: "agriculture",
       material_cost: "",
@@ -101,7 +105,7 @@ function NewEstimate() {
   const subtotal = mc + tc + lc;
   const roughTotal = subtotal * (qty || 1);
 
-  const formatRough = (n) => `Tsh ${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+  const formatRough = (n) => formatCurrency(n, currency);
 
   const goNext = () => setStep((s) => Math.min(s + 1, 4));
   const goBack = () => setStep((s) => Math.max(s - 1, 1));
@@ -232,6 +236,22 @@ function NewEstimate() {
                 <div className="space-y-5 animate-fadeIn">
                   <h6 className="text-sm font-semibold mb-1" style={{ color: 'var(--ds-heading-color)' }}>Cost Breakdown</h6>
                   <p className="text-xs mb-4" style={{ color: 'var(--ds-text-secondary)' }}>Enter the estimated costs for each category.</p>
+
+                  {/* Currency Selector */}
+                  <div className="flex items-center gap-2 pb-2">
+                    <span className="text-xs font-medium mr-1" style={{ color: 'var(--ds-text-muted)' }}>Currency:</span>
+                    {currencies.map((c) => (
+                      <button key={c.code} type="button" onClick={() => setCurrency(c.code)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                        style={{
+                          backgroundColor: currency === c.code ? 'var(--ds-primary)' : 'var(--ds-hover-bg)',
+                          color: currency === c.code ? '#fff' : 'var(--ds-body-color)',
+                          border: currency === c.code ? 'none' : '1px solid var(--ds-border)',
+                        }}>
+                        {c.code}
+                      </button>
+                    ))}
+                  </div>
 
                   {[
                     { name: "material_cost", label: "Material Cost", icon: "ti ti-package", placeholder: "e.g. 500000", desc: "Raw materials and supplies" },

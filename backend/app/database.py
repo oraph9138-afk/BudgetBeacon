@@ -33,6 +33,7 @@ class Estimate(Base):
     production_days = Column(Integer)
     quantity = Column(Integer)
     location = Column(String)
+    currency = Column(String, default="TZS")
     predicted_cost = Column(Float)
     confidence_pct = Column(Float)
     risk_level = Column(String)

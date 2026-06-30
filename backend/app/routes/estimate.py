@@ -4,6 +4,7 @@ from datetime import datetime
 from app.database import get_db, Estimate, User
 from app.schemas import EstimateInput, EstimateResponse, EstimateBreakdown
 from app.ml.predict import prediction_service
+from app.ml.tips import generate_tips
 from app.auth import get_current_user
 
 router = APIRouter(prefix="/api", tags=["estimates"])
@@ -20,6 +21,8 @@ def create_estimate(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    tips = generate_tips(data, result)
+
     estimate = Estimate(
         user_id=user.id,
         business_type=data.business_type,
@@ -29,6 +32,7 @@ def create_estimate(
         production_days=data.production_days,
         quantity=data.quantity,
         location=data.location,
+        currency=data.currency,
         predicted_cost=result["predicted_cost"],
         confidence_pct=result["confidence_pct"],
         risk_level=result["risk_level"],
@@ -44,4 +48,6 @@ def create_estimate(
         risk_level=result["risk_level"],
         breakdown=EstimateBreakdown(**result["breakdown"]),
         timestamp=estimate.created_at,
+        currency=data.currency,
+        tips=tips,
     )

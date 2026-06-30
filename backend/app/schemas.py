@@ -43,6 +43,7 @@ class EstimateInput(BaseModel):
     production_days: int
     quantity: int
     location: str
+    currency: str = "TZS"
 
 
 class EstimateBreakdown(BaseModel):
@@ -58,6 +59,8 @@ class EstimateResponse(BaseModel):
     risk_level: str
     breakdown: EstimateBreakdown
     timestamp: datetime
+    currency: str = "TZS"
+    tips: list[str] = []
 
 
 class HistoryItem(BaseModel):
@@ -66,6 +69,7 @@ class HistoryItem(BaseModel):
     predicted_cost: float
     confidence_pct: float
     risk_level: str
+    currency: str = "TZS"
     created_at: str
 
 
