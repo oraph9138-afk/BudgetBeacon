@@ -47,29 +47,58 @@ echo.
 REM ---- Pre-flight checks ----
 echo [1/6] Checking prerequisites...
 
-REM Check Python version (3.10–3.13) using Python itself — avoids batch parsing issues
-python -c "import sys; v=sys.version_info; assert (3,10) <= (v.major, v.minor) <= (3,13), f'Python 3.10-3.13 required, got {v.major}.{v.minor}'" >nul 2>&1
+REM ----- Python -----
+REM First check if python exists at all
+python --version >nul 2>&1
 if %errorlevel% neq 0 (
-  python -c "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}')" 2>nul
-  echo Error: Python 3.10-3.13 required. Download from https://www.python.org/downloads/
-  echo (Python 3.14+ breaks pydantic-core — use 3.12 or 3.13)
+  echo Error: Python is not installed or not in PATH.
+  echo Download Python 3.10-3.13 from https://www.python.org/downloads/
   pause
   exit /b 1
 )
-for /f %%V in ('python -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")"') do set PY_VER=%%V
+
+REM Get Python major.minor version using a temp file (avoids for/f quoting issues)
+python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" > "%TEMP%\budgetbeacon_pyver.tmp"
+set /p PY_VER=<"%TEMP%\budgetbeacon_pyver.tmp"
+del "%TEMP%\budgetbeacon_pyver.tmp" 2>nul
+
+REM Split into major and minor
+for /f "tokens=1,2 delims=." %%a in ("%PY_VER%") do (
+  set PY_MAJOR=%%a
+  set PY_MINOR=%%b
+)
+
+REM Validate version
+if not "%PY_MAJOR%"=="3" (
+  echo Error: Python 3 required, got %PY_VER%.
+  echo Download Python 3.10-3.13 from https://www.python.org/downloads/
+  pause
+  exit /b 1
+)
+if %PY_MINOR% lss 10 (
+  echo Error: Python 3.10+ required, got %PY_VER%.
+  pause & exit /b 1
+)
+if %PY_MINOR% gtr 13 (
+  echo Error: Python 3.13 or lower required, got %PY_VER%.
+  echo Python 3.14+ breaks pydantic-core — use 3.12 or 3.13.
+  pause & exit /b 1
+)
 echo   Python %PY_VER% -- OK
 
-REM Check Node.js
+REM ----- Node.js -----
 node --version >nul 2>&1
 if %errorlevel% neq 0 (
   echo Error: Node.js is not installed. Download from https://nodejs.org/
   pause
   exit /b 1
 )
-for /f "tokens=1" %%V in ('node --version') do set NODE_VER=%%V
+node --version > "%TEMP%\budgetbeacon_nodever.tmp"
+set /p NODE_VER=<"%TEMP%\budgetbeacon_nodever.tmp"
+del "%TEMP%\budgetbeacon_nodever.tmp" 2>nul
 echo   Node %NODE_VER% -- OK
 
-REM Check npm
+REM ----- npm -----
 npm --version >nul 2>&1
 if %errorlevel% neq 0 (
   echo Error: npm is not installed.
@@ -78,7 +107,7 @@ if %errorlevel% neq 0 (
 )
 echo.
 
-REM Check directories
+REM ----- Directories -----
 if not exist "%BACKEND_DIR%" (
   echo Error: Backend directory not found at %BACKEND_DIR%
   pause & exit /b 1
@@ -96,7 +125,7 @@ if not exist "%FRONTEND_DIR%\package.json" (
   pause & exit /b 1
 )
 
-REM Check port availability
+REM ----- Port availability -----
 netstat -an | findstr ":%BACKEND_PORT% " >nul 2>&1
 if %errorlevel% equ 0 (
   echo Error: Port %BACKEND_PORT% (backend) is already in use.
@@ -155,7 +184,6 @@ if exist "%BACKEND_DIR%\oraph.db" (
 REM ---- Start backend ----
 echo [5/6] Starting backend on 0.0.0.0:%BACKEND_PORT%...
 start "BudgetBeacon - Backend" /min cmd /c "uvicorn app.main:app --host 0.0.0.0 --port %BACKEND_PORT% --reload"
-set BACKEND_PID=!ERRORLEVEL!
 
 echo   Waiting for backend...
 set READY=0
