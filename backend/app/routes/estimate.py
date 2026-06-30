@@ -10,11 +10,15 @@ router = APIRouter(prefix="/api", tags=["estimates"])
 
 
 @router.post("/estimate", response_model=EstimateResponse)
-def create_estimate(data: EstimateInput, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def create_estimate(
+    data: EstimateInput,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     try:
         result = prediction_service.predict(data)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
     estimate = Estimate(
         user_id=user.id,

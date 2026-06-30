@@ -77,17 +77,15 @@ function History() {
       {history.length > 0 && (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
           <h2 className="text-lg font-semibold mb-4">Recent Estimates</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="id" />
-                <YAxis />
-                <Tooltip formatter={(value) => `Tsh ${value.toLocaleString()}`} />
-                <Bar dataKey="cost" fill="#2563eb" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ResponsiveContainer width="100%" height={256}>
+            <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="id" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <Tooltip formatter={(value) => [`Tsh ${value.toLocaleString()}`, "Cost"]} />
+              <Bar dataKey="cost" fill="#2563eb" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
 
