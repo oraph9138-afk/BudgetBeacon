@@ -47,29 +47,16 @@ echo.
 REM ---- Pre-flight checks ----
 echo [1/6] Checking prerequisites...
 
-REM Check Python
-python -c "import sys; sys.exit(0)" >nul 2>&1
+REM Check Python version (3.10–3.13) using Python itself — avoids batch parsing issues
+python -c "import sys; v=sys.version_info; assert (3,10) <= (v.major, v.minor) <= (3,13), f'Python 3.10-3.13 required, got {v.major}.{v.minor}'" >nul 2>&1
 if %errorlevel% neq 0 (
-  echo Error: Python is not installed or not in PATH.
-  echo Install Python 3.10-3.13 from https://www.python.org/downloads/
+  python -c "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}')" 2>nul
+  echo Error: Python 3.10-3.13 required. Download from https://www.python.org/downloads/
+  echo (Python 3.14+ breaks pydantic-core — use 3.12 or 3.13)
   pause
   exit /b 1
 )
-
-for /f %%V in ('python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do set PY_VER=%%V
-for /f "tokens=1,2 delims=." %%a in ("%PY_VER%") do set PY_MAJOR=%%a & set PY_MINOR=%%b
-if not "%PY_MAJOR%"=="3" (
-  echo Error: Python 3 required, got %PY_VER%.
-  pause & exit /b 1
-)
-if %PY_MINOR% lss 10 (
-  echo Error: Python 3.10+ required, got %PY_VER%.
-  pause & exit /b 1
-)
-if %PY_MINOR% gtr 13 (
-  echo Error: Python 3.13 or lower required, got %PY_VER% ^(pydantic-core does not support 3.14^).
-  pause & exit /b 1
-)
+for /f %%V in ('python -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")"') do set PY_VER=%%V
 echo   Python %PY_VER% -- OK
 
 REM Check Node.js
