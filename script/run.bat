@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 set BACKEND_PORT=8000
 set FRONTEND_PORT=5173
-set NO_FRONTEND=0
+set NO_FRONTEND=1
 
 :parse
 if "%~1"=="" goto :done_parse
@@ -66,27 +66,13 @@ if %READY% equ 0 (
 echo   API Docs: http://localhost:%BACKEND_PORT%/docs
 echo.
 
-REM ---- Show summary before starting frontend (avoids start cmd bugs) ----
-echo ==============================================
-echo    BudgetBeacon is running!
-echo.
-echo    Frontend:  http://localhost:%FRONTEND_PORT%
-echo    Backend:   http://localhost:%BACKEND_PORT%
-echo    API Docs:  http://localhost:%BACKEND_PORT%/docs
-echo.
-echo    Opening frontend in your browser...
-echo    Close this window to stop all services.
-echo ==============================================
-
-start http://localhost:%FRONTEND_PORT%
-
-if "%NO_FRONTEND%"=="1" goto :end
+if "%NO_FRONTEND%"=="1" goto :summary
 
 echo [5/5] Starting frontend on 0.0.0.0:%FRONTEND_PORT%...
 pushd "%FRONTEND_DIR%"
 if errorlevel 1 (
   echo   Warning: Frontend directory not found at %FRONTEND_DIR%
-  goto :end
+  goto :summary
 )
 npm install --silent >nul 2>&1
 if errorlevel 1 (
@@ -96,5 +82,20 @@ set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
 start "" cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
 echo   Frontend: http://localhost:%FRONTEND_PORT%
 
-:end
+:summary
+echo ==============================================
+echo    BudgetBeacon is running!
+echo.
+echo    Backend:   http://localhost:%BACKEND_PORT%
+echo    API Docs:  http://localhost:%BACKEND_PORT%/docs
+echo.
+if "%NO_FRONTEND%"=="1" (
+  echo    Frontend is disabled.
+) else (
+  echo    Frontend:  http://localhost:%FRONTEND_PORT%
+  echo    Opening frontend in your browser...
+  start http://localhost:%FRONTEND_PORT%
+)
+echo    Close this window to stop all services.
+echo ==============================================
 pause
