@@ -30,30 +30,28 @@ echo Backend:   0.0.0.0:%BACKEND_PORT%
 echo Frontend:  0.0.0.0:%FRONTEND_PORT%
 echo.
 
-REM ---- Backend setup ----
-echo [1/4] Setting up Python virtual environment...
 cd /d "%BACKEND_DIR%"
+
+echo [1/4] Setting up Python virtual environment...
 if not exist "venv" (python -m venv venv)
-if %errorlevel% neq 0 (echo Error: venv creation failed & pause & exit /b 1)
+if errorlevel 1 (echo Error: venv creation failed & pause & exit /b 1)
 
 call venv\Scripts\activate.bat
-if %errorlevel% neq 0 (echo Error: venv activation failed & pause & exit /b 1)
+if errorlevel 1 (echo Error: venv activation failed & pause & exit /b 1)
 
 echo [2/4] Installing Python dependencies...
 pip install -r requirements.txt -q
-if %errorlevel% neq 0 (echo Error: pip install failed & pause & exit /b 1)
+if errorlevel 1 (echo Error: pip install failed & pause & exit /b 1)
 
-REM ---- Train ML models ----
 echo [3/4] Checking ML models...
 if not exist "%MODEL_DIR%\main_model.pkl" (
   echo   Models not found -- training now (first run, ~30 seconds)
   python -m app.ml.train
-  if %errorlevel% neq 0 (echo Error: training failed & pause & exit /b 1)
+  if errorlevel 1 (echo Error: training failed & pause & exit /b 1)
 ) else (
   echo   Models found -- skipping training.
 )
 
-REM ---- Start backend ----
 echo [4/4] Starting backend on 0.0.0.0:%BACKEND_PORT%...
 start "BudgetBeacon - Backend" /min cmd /c "uvicorn app.main:app --host 0.0.0.0 --port %BACKEND_PORT% --reload"
 echo   Waiting for backend...
@@ -63,24 +61,36 @@ for /l %%i in (1,1,30) do (
   >nul 2>&1 timeout /t 1
 )
 :backend_ready
-if %READY% equ 0 (echo Warning: Backend health check failed, may still be starting.)
-
-REM ---- Start frontend ----
-if "%NO_FRONTEND%"=="0" (
-  echo [5/5] Starting frontend on 0.0.0.0:%FRONTEND_PORT%...
-  cd /d "%FRONTEND_DIR%"
-  npm install --silent >nul 2>&1 || echo Warning: npm install had issues.
-  set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
-  start "BudgetBeacon - Frontend" /min cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
-  echo   Frontend: http://127.0.0.1:%FRONTEND_PORT%
+if %READY% equ 0 (
+  echo   Warning: Backend health check failed, may still be starting.
+) else (
+  echo   Backend is ready!
 )
+echo   API Docs: http://127.0.0.1:%BACKEND_PORT%/docs
+echo.
 
-REM ---- Summary ----
+if "%NO_FRONTEND%"=="1" goto :summary
+
+echo [5/5] Starting frontend on 0.0.0.0:%FRONTEND_PORT%...
+cd /d "%FRONTEND_DIR%"
+npm install --silent >nul 2>&1
+if errorlevel 1 (
+  echo   Warning: npm install had issues, attempting to start anyway...
+)
+set VITE_API_URL=http://127.0.0.1:%BACKEND_PORT%
+start "BudgetBeacon - Frontend" /min cmd /c "npx vite --host 0.0.0.0 --port %FRONTEND_PORT%"
+echo   Frontend: http://127.0.0.1:%FRONTEND_PORT%
+
+:summary
 echo ==============================================
 echo    BudgetBeacon is running!
+echo.
 echo    Frontend:  http://127.0.0.1:%FRONTEND_PORT%
 echo    Backend:   http://127.0.0.1:%BACKEND_PORT%
 echo    API Docs:  http://127.0.0.1:%BACKEND_PORT%/docs
+echo.
+echo    Opening frontend in your browser...
 echo    Close this window to stop all services.
 echo ==============================================
+start http://127.0.0.1:%FRONTEND_PORT%
 pause
