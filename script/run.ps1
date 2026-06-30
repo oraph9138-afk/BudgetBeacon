@@ -64,13 +64,12 @@ Check-Command "node"   "Node.js 20+"
 Check-Command "npm"    "npm 9+"
 
 try {
-  $pyVer = & python --version 2>&1
-  Write-Host "✔ $pyVer"
-  if ($pyVer -match "Python (\d+)\.(\d+)") {
-    $major = [int]$Matches[1]; $minor = [int]$Matches[2]
-    if ($major -ne 3 -or $minor -lt 10 -or $minor -gt 13) {
-      Die "Python 3.10–3.13 required, got $major.$minor. Python 3.14+ breaks pydantic-core."
-    }
+  $pyMajor = & python -c "import sys; print(sys.version_info.major)"
+  $pyMinor = & python -c "import sys; print(sys.version_info.minor)"
+  $major = [int]$pyMajor.Trim(); $minor = [int]$pyMinor.Trim()
+  Write-Host "✔ Python $major.$minor"
+  if ($major -ne 3 -or $minor -lt 10 -or $minor -gt 13) {
+    Die "Python 3.10–3.13 required, got $major.$minor. Python 3.14+ breaks pydantic-core."
   }
 } catch { Die "Failed to detect Python version." }
 

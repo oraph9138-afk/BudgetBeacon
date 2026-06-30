@@ -48,7 +48,7 @@ REM ---- Pre-flight checks ----
 echo [1/6] Checking prerequisites...
 
 REM Check Python
-python --version >nul 2>&1
+python -c "import sys; sys.exit(0)" >nul 2>&1
 if %errorlevel% neq 0 (
   echo Error: Python is not installed or not in PATH.
   echo Install Python 3.10-3.13 from https://www.python.org/downloads/
@@ -56,7 +56,7 @@ if %errorlevel% neq 0 (
   exit /b 1
 )
 
-for /f "tokens=2" %%V in ('python --version 2^>^&1') do set PY_VER=%%V
+for /f %%V in ('python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do set PY_VER=%%V
 for /f "tokens=1,2 delims=." %%a in ("%PY_VER%") do set PY_MAJOR=%%a & set PY_MINOR=%%b
 if not "%PY_MAJOR%"=="3" (
   echo Error: Python 3 required, got %PY_VER%.

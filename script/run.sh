@@ -73,13 +73,12 @@ check_cmd node
 check_cmd npm
 
 # Python version check — must be 3.10–3.13
-PY_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
-PY_MAJOR=$(echo "$PY_VERSION" | cut -d. -f1)
-PY_MINOR=$(echo "$PY_VERSION" | cut -d. -f2)
+PY_MAJOR=$(python3 -c "import sys; print(sys.version_info.major)")
+PY_MINOR=$(python3 -c "import sys; print(sys.version_info.minor)")
 if [ "$PY_MAJOR" -ne 3 ] || [ "$PY_MINOR" -lt 10 ] || [ "$PY_MINOR" -gt 13 ]; then
-  die "Python 3.10–3.13 required, got $PY_VERSION. Python 3.14+ is not supported by pydantic-core."
+  die "Python 3.10–3.13 required, got $PY_MAJOR.$PY_MINOR. Python 3.14+ is not supported by pydantic-core."
 fi
-echo "✔ Python $PY_VERSION"
+echo "✔ Python $PY_MAJOR.$PY_MINOR"
 echo "✔ Node $(node --version)"
 echo "✔ npm $(npm --version)"
 echo ""
